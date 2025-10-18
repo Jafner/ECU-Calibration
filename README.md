@@ -12,8 +12,16 @@ This repository tracks changes to the Engine Control Unit (ECU) calibration file
 - [Tactrix - EcuFlash v1.44](https://www.tactrix.com/index.php?Itemid=58).
 
 ## Changelog
+### 2025-10-18 - Pedal Feel at High RPM
+- Rescale Requested Torque (Accelerator Pedal) SI-DRIVE Intelligent Engine Speed (RPM) axis 800-6500 -> 800-6400 with equal intervals (350).
+- Rescale and remap Requested Torque (Accelerator Pedal) SI-DRIVE Sport Sharp to handle 800-7200 RPM without cutting Req. Torq. at 6500 RPM.
+- Rescale and remap Requested Torque (Accelerator Pedal) SI-DRIVE Sport to drop Req. Torq. gradually above 6000 RPM. 
+- Reduce Rev Limit (Fuel Cut) 7000/6975 -> 6700/6650. Prior confidence in high RPM reliability was founded on the mistaken impression that the hard rev limit was ever being used.
+- Reduce Speed Limiting (Throttle) SI-DRIVE Intelligent 137/135 -> 75/73 MPH. 
+- Reduce Target Boost values above 2400 RPM and 250 Req. Torq. to peak at 12 PSI (from 13.5). Smoothed.
+- Slightly smoothed Requested Torque Base (RPM) at top end.
 
-### OEM/Original vs. Initial Commit.
+### OEM/Original vs. Initial Commit (2025-10-17).
 Comparison between original ROM and calibration at initial commit to this repo.
 
 #### Summary
