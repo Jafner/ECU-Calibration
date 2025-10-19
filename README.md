@@ -15,6 +15,7 @@ This repository tracks changes to the Engine Control Unit (ECU) calibration file
 ### 2025-10-19 - Tuning Ignition Timing; Establish Baseline
 - Copy Base Ignition Timing Primary Non-Cruise onto Base Ignition Timing Primary Cruise.
 - Copy Knock Correction Advance Max Non-Cruise onto Knock Correction Advance Max Cruise.
+- Copy Primary ignition maps onto Reference counterparts.
 ### 2025-10-18 - Pedal Feel at High RPM
 - Rescale Requested Torque (Accelerator Pedal) SI-DRIVE Intelligent Engine Speed (RPM) axis 800-6500 -> 800-6400 with equal intervals (350).
 - Rescale and remap Requested Torque (Accelerator Pedal) SI-DRIVE Sport Sharp to handle 800-7200 RPM without cutting Req. Torq. at 6500 RPM.
