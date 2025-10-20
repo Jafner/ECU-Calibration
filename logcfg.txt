@@ -1,0 +1,347 @@
+type=ssmk
+
+;;;;;;;; Table of Contents ;;;;;;;;
+; Each field is listed with its name and unit.
+; Parameter codes are appended in square brackets.
+; P parameters are standardized across ECUs.
+; E parameters are specific to the ECU and may not be supported by other ECUs.
+; Parameters marked with # are not yet implemented, or 
+;   not yet validated in this log config file.
+
+; Time (msec)
+
+;;;; Fueling Parameters ;;;;
+; Front O2 Sensor (AFR)                    [P 58]
+; Rear O2 Sensor (AFR)                     [P 59]
+; Front O2 Correction (%)                  [P  3]
+; Rear O2 Correction (%)                   [P 89]
+; Front O2 Learn (%)                       [P  4]
+; Rear O2 Learn (%)                        [P 66]
+; Injector Pulse Width (ms)                [P 21]
+; Fuel Pump Duty Cycle (%)                 [P 47]
+
+;;;; Ignition Timing Parameters ;;;;
+; Intake Advance Multiplier             [P 90]
+; Ignition Total Timing (Degrees)       [P 10]
+; Fine Learn Knock Correction (Degrees) [P 91]
+
+;;;; Air Parameters ;;;;
+; Boost (PSI)                              [P 25]
+; Primary Wastegate Duty Cycle (%)         [P 36]
+; Intake Air Temperature (Degrees F)       [P 11]
+; Mass Airflow (Grams/Second)              [P 12]
+; Manifold Absolute Pressure (PSI)         [P  7]
+; Intake OCV Duty Cycle Left (%)           [P 51]
+; Intake OCV Duty Cycle Right (%)          [P 50]
+; Intake VVT Advance Angle Left (Degrees)  [P 49]
+; Intake VVT Advance Angle Right (Degrees) [P 48]
+
+;;;; Misc Parameters ;;;;
+; Battery Voltage (V)         [P 17]
+; Coolant Temperature (Deg F) [P  2]
+; Engine Load (G/Rev)         [P  1]
+; Engine Speed (RPM)          [P  8]
+; Vehicle Speed (MPH)         [P  9]
+; Accelerator Pedal Angle (%) [P 30]
+; Throttle Opening Angle (%)  [P 13]
+
+;;;; Switches ;;;;
+; Engine Ignition        [S  7]
+; Cabin Air Conditioning [S  9]
+; Rear Window Defogger   [S 20]
+; Cabin Blower           [S 21]
+; Clutch Pedal           [S 63]
+; Brake Pedal            [S 67]
+
+
+;;;;;;;; Subaru Select Monitor (SSM) Parameters ;;;;;;;;
+; `type = ssmk` Indicates that the following parameters should be queried using the SSM protocol over K-Line
+; `paramname` Determines the column name to which the value is logged. 
+;               The sum of paramname character lengths (the header row of the generated CSV)
+;                 must sum to less than 512 characters.
+;               Paramnames should generally be 10 characters long or fewer.
+;               Paramnames are space-delimited, but can use underscores to separate words.
+;               At least the following special characters are valid in paramnames:
+;               _ ( ) % -
+; `paramid` is the address of the parameter in the SSM protocol
+; `databits` is the number of bits used to store the value (default is 8)
+; `offsetbits` is used to align the data bits (default is 0)
+; `scalingrpn` is the formula used to convert the raw value to a human readable value
+; `sampgroup` can be set to group paramters. Grouped parameters will share a "timeslot"
+;    for requesting data. This allows "lower priority" parameters (such as IATs) 
+;    to be sampled less often. Best balance will be to use more, smaller groups.
+; `isvisible` is 0 or 1, and determines whether the parameter is logged to the file.
+; 
+;;;;;;;; Calculated Paramters ;;;;;;;;
+; `type = calc` Indicates that the following parameters should be calculated from other parameters
+; `paramname` Determines the column name to which the value is logged
+; `scalingrpn` is the formula used to convert the raw value to a human readable value
+; 
+;;;;;;;; Triggers ;;;;;;;;
+; `conditionrpn` is the formula used to determine when the trigger is active.
+; `action` is the command to be executed when the trigger is active. Can be `start`, `stop`, or `newfile`.
+;     `start` will start logging to a new file if not already logging. If already logging, it will do nothing.
+;     `stop` will stop logging to the current file if logging. If not logging, it will do nothing.
+;     `newfile` will stop logging to the current file if logging, and start logging to a new file.
+;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;;;;;;; Sample Groups  ;;;;;;;;
+;; Group 0 is the default.
+;; Parameters in group 0 all have top priority and will be sampled every cycle.
+;; Groups 1+ are each treated as one group 0 parameter, and get one sample per cycle.
+;; Each parameter in a non-zero group will be sampled once every `group_size` cycles.
+;; For example, if we have 15 parameters in group 0, and 5 parameters in group 1, then 
+;    each cycle will sample 16 parameters. All of the parameters in group 0, plus one
+;    of the parameters in group 1. The next cycle, it will sample the next parameter 
+;    in group 1, etc.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
+
+
+;;;; Fueling Parameters ;;;;
+
+;; Front O2 Sensor (AFR) ;
+; P58
+paramname = F_AFR
+paramid = 0x46
+scalingrpn = x,128,/,14.7,*
+
+;; Front O2 Sensor Correction (%) ;;
+; P3
+paramname = F_AFR_C_%
+paramid = 0x09
+scalingrpn = x,128,-,100,*,128,/
+
+;; Front O2 Sensor Learn (%) ;;
+; P4
+paramname = F_AFR_L_%
+paramid = 0x0A
+scalingrpn = x,128,-,100,*,128,/
+
+;; Injector Pulse Width (ms) ;;
+; P21
+paramname = IPW_ms
+paramid = 0x20
+scalingrpn = x,256,*,1000,/
+
+;; Fuel Pump Duty Cycle (%) ;;
+; P47
+paramname = FPDC_%
+paramid = 0x3B
+scalingrpn = x,100,*,255,/
+sampgroup = 3
+
+;;;; Ignition Timing Parameters ;;;;
+;; Intake Advance Multiplier ;;
+; P90
+paramname = IAM
+paramid = 0xF9
+scalingrpn = x,16,/
+
+;; Ignition Total Timing (Degrees) ;;
+; P10
+paramname = IGN_T_deg
+paramid = 0x11
+scalingrpn = x,128,-,2,/
+
+;; Fine Learn Knock Correction (Degrees) ;;
+; P91
+paramname = IGN_FLKC
+paramid = 0x199
+scalingrpn = x,0.25,*,32,-
+
+;;;; Air Parameters ;;;;
+;; Boost (PSI) ;;
+; P25
+paramname = Boost_psi
+paramid = 0x24
+scalingrpn = x,128,-,37,*,255,/
+
+;; TODO: Find address for extended parameter
+; Target Boost (PSI) 
+; E6
+;paramname = 
+;paramid = 0x
+;scalingrpn = 
+
+;; Primary Wastegate Duty Cycle (%) ;;
+; P36
+paramname = WGDC_%
+paramid = 0x30
+scalingrpn = x,100,*,255,/
+
+;; Intake Air Temperature (Degrees F) ;;
+; P11
+paramname = IAT_F
+paramid = 0x12
+scalingrpn = x,40,-,9,*,5,/,32,+
+sampgroup = 2
+
+;; Mass Airflow (Grams/Second) ;;
+; P12
+paramname = MAF_g/s
+paramid = 0x13
+databits = 16				
+scalingrpn = x,0.01,*
+
+;; Manifold Absolute Pressure (PSI) ;;
+; P7
+paramname = MAP_psi
+paramid = 0x0D
+scalingrpn = x,37,*,255,/
+
+;; Intake OCV Duty Cycle Left (%) ;;
+; P51
+paramname = VVT_DC_L
+paramid = 0x3F
+scalingrpn = x,100,*,255,/
+
+;; Intake OCV Duty Cycle Right (%) ;;
+; P50
+paramname = VVT_DC_R
+paramid = 0x3E
+scalingrpn = x,100,*,255,/
+
+;; Intake VVT Advance Angle Left (Degrees) ;;
+; P49
+paramname = VVT_Adv_L
+paramid = 0x3D
+scalingrpn = x,50,-
+
+;; Intake VVT Advance Angle Right (Degrees) ;;
+; P 48
+paramname = VVT_Adv_R
+paramid = 0x3C
+scalingrpn = x,50,-
+
+;;;; Misc Parameters ;;;;
+;; Battery Voltage (V) ;;
+; P17
+paramname = Batt_V
+paramid = 0x1C
+scalingrpn = x,0.08,*
+sampgroup = 1
+
+;; Engine Coolant Temperature (Deg F) ;;
+; P2
+paramname = ECT_F
+paramid = 0x08
+scalingrpn = x,40,-,9,*,5,/,32,+
+sampgroup = 2
+
+;; Engine Speed (RPM) ;;
+; P8
+paramname = RPM
+paramid = 0x0E
+databits = 16
+scalingrpn = x,0.25,*
+
+;; Vehicle Speed (MPH) ;;
+; P9
+paramname = MPH
+paramid = 0x10
+scalingrpn = x,0.621371192,*
+
+;; Accelerator Pedal Angle (%) ;;
+; P30
+paramname = Gas_Pedal
+paramid = 0x29
+scalingrpn = x,100,*,255,/
+
+;; Throttle Opening Angle (%) ;;
+; P13
+paramname = Throttle_%
+paramid = 0x15
+scalingrpn = x,100,*,255,/
+
+;;;; Switches ;;;;
+;; Engine Ignition ;;
+; S7
+paramname = Ign_Sw
+paramid = 0x62
+databits = 1
+offsetbits = 3
+sampgroup = 1
+
+;; Cabin Air Conditioning ;;
+; S9
+paramname = A/C_Sw
+paramid = 0x62
+databits = 1
+offsetbits = 1
+sampgroup = 1
+
+;; Rear Window Defogger ;;
+; S20
+paramname = Defog_Sw
+paramid = 0x64
+databits = 1
+offsetbits = 5
+sampgroup = 2
+
+;; Cabin Blower ;;
+; S21
+paramname = Blower_Sw
+paramid = 0x64
+databits = 1
+offsetbits = 4
+sampgroup = 2
+
+;; Clutch Pedal ;;
+; P63
+paramname = Clutch_Sw
+paramid = 0x121
+databits = 1
+offsetbits = 7
+sampgroup = 3
+
+;; Brake Pedal ;;
+; P67
+paramname = Brake_Sw
+paramid = 0x121
+databits = 1
+offsetbits = 3
+sampgroup = 3
+
+;;;;;;;; Calculated Values ;;;;;;;;
+type = calc
+;; Engine Load (G/Rev) ;;
+; P1
+paramname = Load_g/rev
+scalingrpn = MAF_g/s,60,*,RPM,/
+
+;;;;;;;; Logging Conditions ;;;;;;;;
+
+;;;; Strategy 1: Defog Switch ;;;;
+;; Logging controlled by defogger Switch
+;;   If switch is on, log
+;;   If switch is off, don't log
+;conditionrpn = Defog_Sw,1,==
+;action = start
+;conditionrpn = Defog_Sw,0,==
+;action = stop
+
+;;;; Strategy 2: Log when engine running ;;;;
+conditionrpn = RPM,800,>=
+action = start
+conditionrpn = RPM,0,==
+action = stop
+
+;;;; Strategy 3: Log WOT ;;;;
+;conditionrpn = Gas_Pedal,95,>=
+;action = start
+;conditionrpn = Gas_Pedal,60,<
+;action = stop
+
+;;;; Strategy 4: Log when engine running, newfile for WOT, defogger controlled ;;;;
+;conditionrpn = RPM,800,>=
+;action = start
+;conditionrpn = RPM,0,==
+;action = stop
+;conditionrpn = Gas_Pedal,95,>=,Defog_Sw,1,==,&&
+;action = newfile
+;conditionrpn = Gas_Pedal,60,<,Defog_Sw,1,==,&&
