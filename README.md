@@ -12,6 +12,10 @@ This repository tracks changes to the Engine Control Unit (ECU) calibration file
 - [Tactrix - EcuFlash v1.44](https://www.tactrix.com/index.php?Itemid=58).
 
 ## Changelog
+### 2025-10-20 - Sweeping for Warm Idle MTBT 
+- Set Idle Speed Target (A, B, C) to 900 RPM when ECT > 104F. 
+- Set Base Timing Idle maps (A/B, In-Gear/Neutral) to start sweeping from 16.91 deg to 11.64 deg from ECT 104 to 230.
+- Set Rev Limit (Fuel Cut) to 6000/5950 RPM. Abundance of caution.
 ### 2025-10-19 - Tuning Ignition Timing; Establish Baseline
 - Copy Base Ignition Timing Primary Non-Cruise onto Base Ignition Timing Primary Cruise.
 - Copy Knock Correction Advance Max Non-Cruise onto Knock Correction Advance Max Cruise.
