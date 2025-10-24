@@ -12,6 +12,11 @@ This repository tracks changes to the Engine Control Unit (ECU) calibration file
 - [Tactrix - EcuFlash v1.44](https://www.tactrix.com/index.php?Itemid=58).
 
 ## Changelog
+### 2025-10-24 - Reintroduce AVCS, begin implmenting correction to AFR at higher loads.
+- Add AVCS curve by RPM. Peaks at 40 degrees at 2000 RPM, rolls off in either direction.
+- Reduce MAF sensor scaling over 3.36v by 5%.
+- Smooth out target boost to reduce overrun when stomping gas.
+- Reduce timing around lowest RPM of highest load (~2800 RPM, 2.0 g/rev). Increase timing advance at peak load as RPM increases.
 ### 2025-10-21 - Additional Baselining
 - Zero out AVCS advance tables (Cruise, Non-Cruise)
 ### 2025-10-20 - Sweeping for Warm Idle MTBT
